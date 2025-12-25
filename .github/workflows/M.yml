@@ -2,32 +2,36 @@ name: Build APK
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
-    - name: Checkout code
+    - name: Checkout repo
       uses: actions/checkout@v4
 
-    - name: Install dependencies
+    - name: Install system dependencies
       run: |
         sudo apt update
-        sudo apt install -y python3-pip python3-setuptools python3-dev \
-          build-essential git zip unzip openjdk-17-jdk libssl-dev libffi-dev pkg-config
-        pip install cython buildozer
+        sudo apt install -y \
+          python3 python3-pip \
+          git zip unzip \
+          openjdk-17-jdk \
+          libncurses5 libstdc++6
 
-    - name: Test Buildozer
-      run: buildozer --version
+    - name: Install Buildozer & Kivy
+      run: |
+        pip3 install --user buildozer cython kivy
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Build APK
-      run: buildozer android debug
+      run: |
+        buildozer android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: my-apk
+        name: apk
         path: bin/*.apk

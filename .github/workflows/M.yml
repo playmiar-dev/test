@@ -11,23 +11,23 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install dependencies
       run: |
         sudo apt update
         sudo apt install -y python3-pip python3-setuptools python3-dev \
-          build-essential git zip unzip openjdk-17-jdk
+          build-essential git zip unzip openjdk-17-jdk libssl-dev libffi-dev pkg-config
         pip install cython buildozer
 
+    - name: Test Buildozer
+      run: buildozer --version
+
     - name: Build APK
-      run: |
-        buildozer android debug
+      run: buildozer android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: my-apk
         path: bin/*.apk
-- name: Test Buildozer
-run: buildozer --version

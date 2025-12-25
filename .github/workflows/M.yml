@@ -11,13 +11,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup Java 17
+    - name: Setup Java
       uses: actions/setup-java@v4
       with:
         distribution: temurin
         java-version: 17
 
-    - name: Install system packages
+    - name: Install system deps
       run: |
         sudo apt update
         sudo apt install -y \
@@ -26,14 +26,10 @@ jobs:
           libncurses5 libstdc++6 \
           libffi-dev libssl-dev
 
-    - name: Install Python tools
+    - name: Install Buildozer
       run: |
         pip3 install --user buildozer cython==0.29.36 kivy
         echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-    - name: Clean previous build
-      run: |
-        buildozer android clean || true
 
     - name: Build APK (verbose)
       run: |

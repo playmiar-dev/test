@@ -29,3 +29,5 @@ jobs:
       with:
         name: my-apk
         path: bin/*.apk
+- name: Test Buildozer
+run: buildozer --version

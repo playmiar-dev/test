@@ -1,40 +1,37 @@
-[app]
-# نام اپلیکیشن
-title = Graphical Calculator
-# نام پکیج (یونیک باشه)
-package.name = calculator
-package.domain = org.example
+name: Build APK
 
-# فایل اصلی پروژه
-source.dir = .
-source.include_exts = py,png,jpg,kv,atlas
+on:
+  push:
+    branches: [ main ]
 
-# نسخه اپلیکیشن
-version = 0.1
+jobs:
+  build:
+    runs-on: ubuntu-22.04
 
-# نیازمندی‌ها (کتابخانه‌ها)
-requirements = python3,kivy
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
 
-# آیکون اپلیکیشن (اختیاری)
-icon.filename = %(source.dir)s/icon.png
+    - name: Install system dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y \
+          python3 python3-pip \
+          git zip unzip \
+          openjdk-17-jdk \
+          libncurses5 libstdc++6
 
-# مجوزهای اندروید (اگر لازم داری اضافه کن)
-android.permissions = INTERNET
+    - name: Install Buildozer & Kivy
+      run: |
+        pip3 install --user buildozer cython kivy
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-# حالت اجرا
-fullscreen = 0
+    - name: Build APK
+      run: |
+        buildozer android debug
 
-[buildozer]
-# هدف ساخت
-log_level = 2
-warn_on_root = 1
-
-# پلتفرم هدف
-android.api = 33
-android.minapi = 21
-android.sdk = 33
-android.ndk = 25b
-android.arch = armeabi-v7a
-
-# خروجی
-android.debug = True
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: apk
+        path: bin/*.apk

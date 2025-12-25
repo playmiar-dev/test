@@ -1,42 +1,21 @@
-name: Build APK
+name: Build_APK
 
 on:
-  push:
-    branches: [ main ]
+  workflow_dispatch:   # Manual run from the Actions tab
 
 jobs:
-  build:
-    runs-on: ubuntu-22.04
+  build-android:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write   # Required to upload artifacts
 
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Setup Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: temurin
-        java-version: 17
-
-    - name: Install system deps
-      run: |
-        sudo apt update
-        sudo apt install -y \
-          python3 python3-pip \
-          git zip unzip \
-          libncurses5 libstdc++6 \
-          libffi-dev libssl-dev
-
-    - name: Install Buildozer
-      run: |
-        pip3 install --user buildozer cython==0.29.36 kivy
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-    - name: Build APK (verbose)
-      run: |
-        buildozer -v android debug
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: apk
-        path: bin/*.apk
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Buildozer-Kivy-Apk-Creator
+        uses: wildspider57389928/Buildozer-Kivy-APK_Creator@4.0.0
+        with:
+          project-dir: .
+          command: buildozer android debug
